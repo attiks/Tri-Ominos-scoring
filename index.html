@@ -99,8 +99,13 @@
 		<h1>Tri▲Ominos® Scoring</h1>
 		<div class="setup" id="setup">
 			<form id="setupForm">
-				<label for="numPlayers">Number of players (2-6):</label>
-				<input type="number" id="numPlayers" name="numPlayers" min="2" max="6" value="2" required>
+				<label for="numPlayers">Number of players (2-4):</label>
+				<select id="numPlayers" name="numPlayers" required>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+				</select>
+
 				<div id="playerNames"></div>
 				<button type="submit">Start Game</button>
                 <p>Place the Tri-Ominos face down and mix them.<br>
@@ -129,8 +134,12 @@
 				<select id="playerSelect"></select>
 
 				<label for="tilesDrawn">Tiles drawn (0-3):</label>
-				<input type="number" id="tilesDrawn" class="tiles-drawn" value="0" min="0" max="3" required>
-
+				<select id="tilesDrawn" class="tiles-drawn" required>
+					<option value="0">0</option>
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+				</select>
 				<label for="scoreInput1">Tile values to add:</label>
 				<div style="display:flex; gap:8px;">
 					<select id="scoreInput1" class="score-input" required>
@@ -366,17 +375,42 @@
 			const numPlayers = parseInt(numPlayersInput.value);
 			playerNamesDiv.innerHTML = '';
 			for (let i = 0; i < numPlayers; i++) {
+				const row = document.createElement('div');
+				row.style = 'display:flex; gap:10px; align-items:center; margin-bottom:0.5em;';
+
 				const label = document.createElement('label');
 				label.textContent = `Player ${i+1} Name:`;
 				label.setAttribute('for', `player${i}`);
+				label.style = 'flex:1; margin-bottom:0;';
+
 				const input = document.createElement('input');
 				input.type = 'text';
 				input.id = `player${i}`;
 				input.name = `player${i}`;
 				input.required = true;
 				input.value = players[i] || '';
-				playerNamesDiv.appendChild(label);
-				playerNamesDiv.appendChild(input);
+				input.style = 'flex:2;';
+
+				const scoreLabel = document.createElement('label');
+				scoreLabel.textContent = `Starting Score:`;
+				scoreLabel.setAttribute('for', `startScore${i}`);
+				scoreLabel.style = 'flex:1; margin-bottom:0;';
+
+				const scoreInput = document.createElement('input');
+				scoreInput.type = 'number';
+				scoreInput.id = `startScore${i}`;
+				scoreInput.name = `startScore${i}`;
+				scoreInput.required = true;
+				scoreInput.value = '0';
+				scoreInput.min = '0';
+				scoreInput.style = 'flex:1; width:80px;';
+
+				row.appendChild(label);
+				row.appendChild(input);
+				row.appendChild(scoreLabel);
+				row.appendChild(scoreInput);
+
+				playerNamesDiv.appendChild(row);
 			}
 		}
 
@@ -385,17 +419,21 @@
 
 		setupForm.addEventListener('submit', function(e) {
 			e.preventDefault();
+			scoreLog = ['--- Game Started ---'];
+
 			const numPlayers = parseInt(numPlayersInput.value);
 			players = [];
 			for (let i = 0; i < numPlayers; i++) {
 				const name = document.getElementById(`player${i}`).value.trim() || `Player ${i+1}`;
+				const startScore = parseInt(document.getElementById(`startScore${i}`).value) || 0;
 				players.push(name);
+				scores.push(startScore);
+				logEntry = `[${name}] starts with ${startScore} points.`;
+				scoreLog.push(logEntry);
 			}
-			scores = Array(players.length).fill(0);
-			rounds = [scores.slice()];
+			rounds = [];
 			isFirstTile = true;
 			lastRound = false;
-			scoreLog = ['--- Game Started ---'];
 			saveState();
 			setupForm.parentElement.style.display = 'none';
 			scoreboardDiv.style.display = '';
@@ -495,7 +533,6 @@
 
             // Set focus to tiles drawn input for convenience
             tilesDrawn.focus();
-            tilesDrawn.select();
         }
 
 		// No tile placed logic
