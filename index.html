@@ -344,10 +344,8 @@
         const closeMessageBtn = document.getElementById('closeMessageBtn');
         const startNewGameBtn = document.getElementById('startNewGameBtn');
         startNewGameBtn.addEventListener('click', function() {
-            // Clear state and reload page
-            clearState();
-            playerSelectorScoreboard.style.display = 'none';
-            location.reload();
+            // Start new game with same players
+            startNewGameWithSamePlayers();
         });
 
         function showMessage(msg, allowNewGame=false) {
@@ -401,6 +399,32 @@
 
 		function clearState() {
 			localStorage.removeItem(STORAGE_KEY);
+		}
+
+		function startNewGameWithSamePlayers() {
+			// Preserve current player names
+			const currentPlayers = [...players];
+			
+			// Reset game state
+			scores = currentPlayers.map(() => 0);
+			rounds = [];
+			scoreLog = ['--- Game Started ---'];
+			isFirstTile = true;
+			lastRound = false;
+			
+			// Add starting score log entries
+			currentPlayers.forEach((name, idx) => {
+				scoreLog.push(`[${name}] starts with 0 points.`);
+			});
+			
+			// Hide modal and update UI
+			messageModal.style.display = 'none';
+			
+			// Save the new state and re-render
+			saveState();
+			renderScoreboard();
+			updatePlayerSelect();
+			playerSelect.focus();
 		}
 
 		// End round logic.
