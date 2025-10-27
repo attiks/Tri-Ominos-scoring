@@ -179,13 +179,15 @@
 				<label for="playerSelect">Player:</label>
 				<select id="playerSelect"></select>
 
-				<label for="tilesDrawn">Tiles drawn (0-3):</label>
-				<select id="tilesDrawn" class="tiles-drawn" required>
-					<option value="0">0</option>
-					<option value="1">1</option>
-					<option value="2">2</option>
-					<option value="3">3</option>
-				</select>
+				<div class="tile-value-group">
+					<label class="group-label">Tiles drawn (0-3):</label>
+					<div class="radio-group">
+						<label class="radio-label" for="tilesDrawn-0"><input type="radio" id="tilesDrawn-0" name="tilesDrawn" value="0" checked> 0</label>
+						<label class="radio-label" for="tilesDrawn-1"><input type="radio" id="tilesDrawn-1" name="tilesDrawn" value="1"> 1</label>
+						<label class="radio-label" for="tilesDrawn-2"><input type="radio" id="tilesDrawn-2" name="tilesDrawn" value="2"> 2</label>
+						<label class="radio-label" for="tilesDrawn-3"><input type="radio" id="tilesDrawn-3" name="tilesDrawn" value="3"> 3</label>
+					</div>
+				</div>
 				<label>Tile values to add:</label>
 				<div class="tile-values-container">
 					<div class="tile-value-group">
@@ -272,7 +274,7 @@
 		const scoreBody = document.getElementById('scoreBody');
 		const scoreForm = document.getElementById('scoreForm');
 		const playerSelect = document.getElementById('playerSelect');
-		const tilesDrawn = document.getElementById('tilesDrawn');
+
 		const noTileBtn = document.getElementById('noTileBtn');
         const bonusSelect = document.getElementById('bonusSelect');
 
@@ -535,7 +537,7 @@
 			const v1 = parseInt(document.querySelector('input[name="scoreInput1"]:checked').value) || 0;
 			const v2 = parseInt(document.querySelector('input[name="scoreInput2"]:checked').value) || 0;
 			const v3 = parseInt(document.querySelector('input[name="scoreInput3"]:checked').value) || 0;
-			const drawn = parseInt(tilesDrawn.value) || 0;
+			const drawn = parseInt(document.querySelector('input[name="tilesDrawn"]:checked').value) || 0;
 			const bonus = parseInt(bonusSelect.value) || 0;
 			let delta = v1 + v2 + v3;
             let logEntry = `${players[idx]}: Tile [${v1},${v2},${v3}]`;
@@ -572,7 +574,7 @@
 			document.getElementById('scoreInput1-0').checked = true;
 			document.getElementById('scoreInput2-0').checked = true;
 			document.getElementById('scoreInput3-0').checked = true;
-			tilesDrawn.value = '0';
+			document.getElementById('tilesDrawn-0').checked = true;
 			bonusSelect.value = '0';
 
 			// Advance to next player.
@@ -584,14 +586,14 @@
             let nextIdx = (idx + 1) % players.length;
             playerSelect.value = nextIdx;
 
-            // Set focus to tiles drawn input for convenience
-            tilesDrawn.focus();
+            // Set focus to first tiles drawn radio button for convenience
+            document.getElementById('tilesDrawn-0').focus();
         }
 
 		// No tile placed logic
 		noTileBtn.addEventListener('click', function() {
 			const idx = parseInt(playerSelect.value);
-			const drawn = parseInt(tilesDrawn.value) || 0;
+			const drawn = parseInt(document.querySelector('input[name="tilesDrawn"]:checked').value) || 0;
 			let penalty = 0;
 			let logEntry = `${players[idx]}: No tile placed`;
 
@@ -613,7 +615,7 @@
 			scoreLog.push(logEntry);
 
 			renderScoreboard();
-			tilesDrawn.value = '0';
+			document.getElementById('tilesDrawn-0').checked = true;
 
             // Advance to next player.
             advanceToNextPlayer();
