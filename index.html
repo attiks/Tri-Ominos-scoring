@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Tri▲Ominos® Scoring</title>
+	<style>
+		body {
+			font-family: 'Segoe UI', Arial, sans-serif;
+			margin: 0;
+			padding: 0;
+			background: #f7f7f7;
+			color: #222;
+		}
+		.container {
+			max-width: 500px;
+			margin: 0 auto;
+			padding: 1em;
+		}
+		h1 {
+			text-align: center;
+			margin-bottom: 0.5em;
+		}
+		.setup, .scoreboard {
+			background: #fff;
+			border-radius: 10px;
+			box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+			padding: 1em;
+			margin-bottom: 1em;
+		}
+		label {
+			display: block;
+			margin: 0.5em 0 0.2em;
+		}
+		input[type="number"], input[type="text"] {
+			width: 100%;
+			padding: 0.5em;
+			margin-bottom: 0.5em;
+			border-radius: 5px;
+			border: 1px solid #ccc;
+			font-size: 1em;
+		}
+		button {
+			background: #1976d2;
+			color: #fff;
+			border: none;
+			border-radius: 5px;
+			padding: 0.7em 1.2em;
+			font-size: 1em;
+			cursor: pointer;
+			margin-top: 0.5em;
+		}
+		select {
+			border: none;
+			border-radius: 5px;
+			padding: 0.7em 1.2em;
+			font-size: 1em;
+			margin-top: 0.5em;
+			cursor: pointer;
+		}
+		select:focus {
+			outline: 2px solid #1565c0;
+		}
+		button:active {
+			background: #1565c0;
+		}
+		table {
+			width: 100%;
+			border-collapse: collapse;
+			margin-top: 1em;
+		}
+		th, td {
+			padding: 0.6em;
+			text-align: center;
+		}
+		th {
+			background: #e3eafc;
+		}
+		tr:nth-child(even) td {
+			background: #f2f6fc;
+		}
+		.score-input {
+			width: 60px;
+			text-align: center;
+		}
+		@media (max-width: 600px) {
+			.container {
+				max-width: 100%;
+				padding: 0.5em;
+			}
+			table, th, td {
+				font-size: 0.95em;
+			}
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<h1>Tri▲Ominos® Scoring</h1>
+		<div class="setup" id="setup">
+			<form id="setupForm">
+				<label for="numPlayers">Number of players (2-6):</label>
+				<input type="number" id="numPlayers" name="numPlayers" min="2" max="6" value="2" required>
+				<div id="playerNames"></div>
+				<button type="submit">Start Game</button>
+			</form>
+		</div>
+        <div id="messageModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); z-index:1000; align-items:center; justify-content:center;">
+            <div style="background:#fff; border-radius:10px; padding:1.5em; max-width:400px; margin:auto; box-shadow:0 2px 8px rgba(0,0,0,0.15);">
+                <div id="messageContent" style="max-height:350px; overflow-y:auto; font-size:0.98em;"></div>
+                <button type="button" id="closeMessageBtn" style="background:#888; margin-top:1em;">Close</button>
+                <button type="button" id="startNewGameBtn" style="background:#888; margin-top:1em;">Start New Game</button>
+            </div>
+        </div>
+	    <div class="scoreboard" id="scoreboard" style="display:none;">
+			<h2>Scoreboard</h2>
+			<table id="scoreTable">
+				<thead>
+					<tr id="scoreHeader"></tr>
+				</thead>
+				<tbody id="scoreBody"></tbody>
+			</table>
+			<form id="scoreForm" style="margin-top:1em;">
+				<label for="playerSelect">Player:</label>
+				<select id="playerSelect"></select>
+
+				<label for="tilesDrawn">Tiles drawn (0-3):</label>
+				<input type="number" id="tilesDrawn" class="tiles-drawn" value="0" min="0" max="3" required>
+
+				<label>Tile values to add:</label>
+				<div style="display:flex; gap:8px;">
+					<input type="number" id="scoreInput1" class="score-input" required placeholder="Value 1" min="0" max="5">
+					<input type="number" id="scoreInput2" class="score-input" required placeholder="Value 2" min="0" max="5">
+					<input type="number" id="scoreInput3" class="score-input" required placeholder="Value 3" min="0" max="5">
+				</div>
+				<label for="bonusSelect">Bonus placement:</label>
+				<select id="bonusSelect">
+					<option value="0">None</option>
+					<option value="40">Bridge (+40)</option>
+					<option value="50">Hexagon (+50)</option>
+					<option value="100">Double Hexagon (+100)</option>
+				</select>
+                <div>
+                    <button type="submit">Add Score</button>
+                    <button type="button" id="noTileBtn">No tile placed</button>
+                </div>
+			</form>
+
+            <button id="viewLogBtn" style="background:#ffa000;">View Scoring Log</button>
+            <div id="logModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); z-index:1000; align-items:center; justify-content:center;">
+                <div style="background:#fff; border-radius:10px; padding:1.5em; max-width:400px; margin:auto; box-shadow:0 2px 8px rgba(0,0,0,0.15);">
+                    <h3>Scoring Log</h3>
+                    <div id="logContent" style="max-height:350px; overflow-y:auto; font-size:0.98em;"></div>
+                    <button type="button" id="closeLogBtn" style="background:#888; margin-top:1em;">Close</button>
+                </div>
+            </div>
+
+            <button id="endRoundBtn" style="background:#d32f2f; margin-left:10px;">End Round</button>
+			<div id="endRoundModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); z-index:1000; align-items:center; justify-content:center;">
+				<div style="background:#fff; border-radius:10px; padding:1.5em; max-width:350px; margin:auto; box-shadow:0 2px 8px rgba(0,0,0,0.15);">
+					<h3>End Round</h3>
+					<p>Enter the sum of remaining tiles for each player:</p>
+					<form id="endRoundForm">
+						<div id="endRoundInputs"></div>
+						<button type="submit" style="background:#1976d2; margin-top:1em;">Apply End of Round</button>
+						<button type="button" id="cancelEndRound" style="background:#888; margin-left:10px;">Cancel</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>
+		const STORAGE_KEY = 'triominoes_state_v1';
+
+        const setupForm = document.getElementById('setupForm');
+		const numPlayersInput = document.getElementById('numPlayers');
+		const playerNamesDiv = document.getElementById('playerNames');
+		const scoreboardDiv = document.getElementById('scoreboard');
+		const scoreHeader = document.getElementById('scoreHeader');
+		const scoreBody = document.getElementById('scoreBody');
+		const scoreForm = document.getElementById('scoreForm');
+		const playerSelect = document.getElementById('playerSelect');
+		const scoreInput1 = document.getElementById('scoreInput1');
+		const scoreInput2 = document.getElementById('scoreInput2');
+		const scoreInput3 = document.getElementById('scoreInput3');
+		const tilesDrawn = document.getElementById('tilesDrawn');
+		const noTileBtn = document.getElementById('noTileBtn');
+        const bonusSelect = document.getElementById('bonusSelect');
+
+		const endRoundBtn = document.getElementById('endRoundBtn');
+        const endRoundModal = document.getElementById('endRoundModal');
+        const endRoundForm = document.getElementById('endRoundForm');
+        const endRoundInputs = document.getElementById('endRoundInputs');
+        const cancelEndRound = document.getElementById('cancelEndRound');
+
+        const viewLogBtn = document.getElementById('viewLogBtn');
+        const logModal = document.getElementById('logModal');
+        const logContent = document.getElementById('logContent');
+        const closeLogBtn = document.getElementById('closeLogBtn');
+
+        const messageModal = document.getElementById('messageModal');
+        const messageModalContent = document.getElementById('messageModalContent');
+        const closeMessageBtn = document.getElementById('closeMessageBtn');
+        const startNewGameBtn = document.getElementById('startNewGameBtn');
+        startNewGameBtn.addEventListener('click', function() {
+            // Clear state and reload page
+            clearState();
+            location.reload();
+        });
+
+        function showMessage(msg, allowNewGame=false) {
+            messageModalContent.innerHTML = msg;
+            messageModal.style.display = 'flex';
+            if (allowNewGame) {
+                startNewGameBtn.style.display = 'inline-block';
+            } else {
+                startNewGameBtn.style.display = 'none';
+            }
+        }
+        closeMessageBtn.addEventListener('click', function() {
+            messageModal.style.display = 'none';
+        });
+
+		let players = [];
+		let scores = [];
+		let rounds = [];
+		let scoreLog = [];
+		let isFirstTile = true;
+		let lastRound = false;
+
+		function saveState() {
+			const state = {
+				players,
+				scores,
+				rounds,
+				scoreLog,
+				isFirstTile,
+				lastRound
+			};
+			localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+		}
+
+		function loadState() {
+			const stateStr = localStorage.getItem(STORAGE_KEY);
+			if (!stateStr) return false;
+			try {
+				const state = JSON.parse(stateStr);
+				players = state.players || [];
+				scores = state.scores || [];
+				rounds = state.rounds || [];
+				scoreLog = state.scoreLog || [];
+				isFirstTile = state.isFirstTile || false;
+				lastRound = state.lastRound || false;
+				return true;
+			} catch {
+				return false;
+			}
+		}
+
+		function clearState() {
+			localStorage.removeItem(STORAGE_KEY);
+		}
+
+		// End round logic.
+		endRoundBtn.addEventListener('click', function() {
+			// Show modal and create inputs for each player
+			endRoundInputs.innerHTML = '';
+			players.forEach((name, idx) => {
+				const label = document.createElement('label');
+				label.textContent = name + "'s hand total:";
+				label.setAttribute('for', 'endHand' + idx);
+				const input = document.createElement('input');
+				input.type = 'number';
+				input.id = 'endHand' + idx;
+				input.min = '0';
+				input.value = '0';
+				input.style = 'width:80px; margin-bottom:0.5em;';
+				endRoundInputs.appendChild(label);
+				endRoundInputs.appendChild(input);
+			});
+			endRoundModal.style.display = 'flex';
+		});
+
+		cancelEndRound.addEventListener('click', function() {
+			endRoundModal.style.display = 'none';
+		});
+
+		endRoundForm.addEventListener('submit', function(e) {
+			e.preventDefault();
+			// Gather hand values
+			const handVals = players.map((_, idx) => parseInt(document.getElementById('endHand' + idx).value) || 0);
+			// Find lowest hand value
+			const minVal = Math.min(...handVals);
+			const minIdxs = handVals.reduce((arr, val, idx) => val === minVal ? arr.concat(idx) : arr, []);
+			// If only one player has lowest, apply bonus
+			if (minIdxs.length === 1) {
+				// That player gets sum of differences from all others
+				let bonus = 0;
+				handVals.forEach((val, idx) => {
+					if (idx !== minIdxs[0]) bonus += (val - minVal);
+				});
+				scores[minIdxs[0]] += bonus;
+			}
+			// Hide modal, reset for next round
+			endRoundModal.style.display = 'none';
+
+			renderScoreboard();
+
+            if (lastRound) {
+                let maxScore = Math.max(...scores);
+                let winnerIdxs = scores.reduce((arr, val, idx) => val === maxScore ? arr.concat(idx) : arr, []);
+                if (winnerIdxs.length === 1) {
+                    showMessage(`Game over! The winner is ${players[winnerIdxs[0]]} with ${maxScore} points.`, true);
+                } else {
+                    showMessage(`Game over! Tie between: ${winnerIdxs.map(i => players[i]).join(', ')} with ${maxScore} points.`, true);
+                }
+            }
+            else {
+                scoreLog.push('--- New Round ---');
+                isFirstTile = true;
+            }
+		});
+       
+		function updatePlayerNameInputs() {
+			const numPlayers = parseInt(numPlayersInput.value);
+			playerNamesDiv.innerHTML = '';
+			for (let i = 0; i < numPlayers; i++) {
+				const label = document.createElement('label');
+				label.textContent = `Player ${i+1} Name:`;
+				label.setAttribute('for', `player${i}`);
+				const input = document.createElement('input');
+				input.type = 'text';
+				input.id = `player${i}`;
+				input.name = `player${i}`;
+				input.required = true;
+				input.value = players[i] || '';
+				playerNamesDiv.appendChild(label);
+				playerNamesDiv.appendChild(input);
+			}
+		}
+
+		numPlayersInput.addEventListener('input', updatePlayerNameInputs);
+		updatePlayerNameInputs();
+
+		setupForm.addEventListener('submit', function(e) {
+			e.preventDefault();
+			const numPlayers = parseInt(numPlayersInput.value);
+			players = [];
+			for (let i = 0; i < numPlayers; i++) {
+				const name = document.getElementById(`player${i}`).value.trim() || `Player ${i+1}`;
+				players.push(name);
+			}
+			scores = Array(players.length).fill(0);
+			rounds = [scores.slice()];
+			isFirstTile = true;
+			lastRound = false;
+			scoreLog = ['--- Game Started ---'];
+			saveState();
+			setupForm.parentElement.style.display = 'none';
+			scoreboardDiv.style.display = '';
+			renderScoreboard();
+			updatePlayerSelect();
+			playerSelect.focus();
+		});
+
+		function renderScoreboard() {
+			saveState();
+			scoreHeader.innerHTML = '';
+			players.forEach(name => {
+				const th = document.createElement('th');
+				th.textContent = name;
+				scoreHeader.appendChild(th);
+			});
+			scoreBody.innerHTML = '';
+			const tr = document.createElement('tr');
+			scores.forEach(score => {
+				const td = document.createElement('td');
+				td.textContent = score;
+				tr.appendChild(td);
+			});
+			scoreBody.appendChild(tr);
+
+            // Check for 400 point trigger
+            if (!lastRound && scores.some(score => score >= 400)) {
+                lastRound = true;
+                showMessage('A player has reached 400 points! This is the last round. Winner will be determined at the end of this round.');
+            }
+		}
+
+		function updatePlayerSelect() {
+			playerSelect.innerHTML = '';
+			players.forEach((name, idx) => {
+				const option = document.createElement('option');
+				option.value = idx;
+				option.textContent = name;
+				playerSelect.appendChild(option);
+			});
+		}
+
+		scoreForm.addEventListener('submit', function(e) {
+			saveState();
+			e.preventDefault();
+			const idx = parseInt(playerSelect.value);
+			const v1 = parseInt(scoreInput1.value) || 0;
+			const v2 = parseInt(scoreInput2.value) || 0;
+			const v3 = parseInt(scoreInput3.value) || 0;
+			const drawn = parseInt(tilesDrawn.value) || 0;
+			const bonus = parseInt(bonusSelect.value) || 0;
+			let delta = v1 + v2 + v3;
+            let logEntry = `${players[idx]}: Tile [${v1},${v2},${v3}]`;
+
+			// Apply first tile bonus
+			if (isFirstTile) {
+				if (v1 === v2 && v2 === v3) {
+					if (v1 === 0) {
+						delta = 30 + 10;
+                        logEntry += ` (Triple-0 start: +40)`;
+					} else {
+						delta = v1 * 3 + 10;
+                        logEntry += ` (Triple start: +${v1*3+10})`;
+					}
+				}
+				isFirstTile = false;
+			}
+			// Apply bonus placement
+			if (bonus > 0) {
+				delta += bonus;
+                logEntry += ` + Bonus: ${bonus}`;
+			}
+			// Apply drawing penalty
+			if (drawn > 0 && drawn <= 3) {
+				delta -= drawn * 5;
+                logEntry += ` - Draw penalty: ${drawn*5}`;
+			}
+			scores[idx] += delta;
+            logEntry += ` → Score change: ${delta}`;
+            scoreLog.push(logEntry);
+			renderScoreboard();
+
+			scoreInput1.value = '';
+			scoreInput2.value = '';
+			scoreInput3.value = '';
+			tilesDrawn.value = '0';
+			bonusSelect.value = '0';
+
+			// Advance to next player.
+            advanceToNextPlayer();
+		});
+        
+        function advanceToNextPlayer() {
+            const idx = parseInt(playerSelect.value);
+            let nextIdx = (idx + 1) % players.length;
+            playerSelect.value = nextIdx;
+
+            // Set focus to tiles drawn input for convenience
+            tilesDrawn.focus();
+            tilesDrawn.select();
+        }
+
+		// No tile placed logic
+		noTileBtn.addEventListener('click', function() {
+			const idx = parseInt(playerSelect.value);
+			const drawn = parseInt(tilesDrawn.value) || 0;
+			let penalty = 0;
+			let logEntry = `${players[idx]}: No tile placed`;
+
+			if (drawn === 0) {
+				penalty = -10;
+				logEntry += ` (No tiles left: -10)`;
+			} else {
+				if (drawn === 3) {
+					penalty = -25;
+					logEntry += ` (Max draw penalty: -25)`;
+				}
+                else {
+                    penalty = -drawn * 5;
+                    logEntry += ` (Draw penalty: -${drawn*5})`;
+                }
+			}
+			scores[idx] += penalty;
+			logEntry += ` → Score change: ${penalty}`;
+			scoreLog.push(logEntry);
+
+			renderScoreboard();
+			tilesDrawn.value = '0';
+
+            // Advance to next player.
+            advanceToNextPlayer();
+		});
+
+		// View scoring log modal logic
+        viewLogBtn.addEventListener('click', function() {
+            logContent.innerHTML = '';
+            if (scoreLog.length === 0) {
+                logContent.textContent = 'No scoring actions yet.';
+            } else {
+                logContent.innerHTML = scoreLog.map(entry => `<div style="margin-bottom:0.5em;">${entry}</div>`).join('');
+            }
+            logModal.style.display = 'flex';
+        });
+        closeLogBtn.addEventListener('click', function() {
+            logModal.style.display = 'none';
+        });
+
+		// Restore state on load
+		window.addEventListener('DOMContentLoaded', function() {
+			if (loadState() && players.length > 0) {
+				setupForm.parentElement.style.display = 'none';
+				scoreboardDiv.style.display = '';
+				renderScoreboard();
+				updatePlayerSelect();
+                playerSelect.focus();
+			}
+		});
+
+	</script>
+</body>
+</html>
