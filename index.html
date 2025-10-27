@@ -17,9 +17,30 @@
 			margin: 0 auto;
 			padding: 1em;
 		}
+		.header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 0.5em;
+		}
 		h1 {
 			text-align: center;
-			margin-bottom: 0.5em;
+			margin: 0;
+			flex: 1;
+		}
+		.player-selector-header {
+			flex-shrink: 0;
+		}
+		.player-selector-header select {
+			border: 1px solid #ccc;
+			border-radius: 5px;
+			padding: 0.7em 1.2em;
+			font-size: 1em;
+			cursor: pointer;
+			background: #fff;
+		}
+		.player-selector-header select:focus {
+			outline: 2px solid #1565c0;
 		}
 		.setup, .scoreboard {
 			background: #fff;
@@ -148,7 +169,12 @@
 </head>
 <body>
 	<div class="container">
-		<h1>Tri▲Ominos® Scoring</h1>
+		<div class="header">
+			<h1>Tri▲Ominos® Scoring</h1>
+			<div class="player-selector-header" id="playerSelectorHeader" style="display:none;">
+				<select id="playerSelectHeader"></select>
+			</div>
+		</div>
 		<div class="setup" id="setup">
 			<form id="setupForm">
 				<label for="numPlayers">Number of players (2-4):</label>
@@ -182,8 +208,6 @@
 				<tbody id="scoreBody"></tbody>
 			</table>
 			<form id="scoreForm" style="margin-top:1em;">
-				<label for="playerSelect">Player:</label>
-				<select id="playerSelect"></select>
 
 				<div class="tile-value-group">
 					<label class="group-label">Tiles drawn (0-3):</label>
@@ -279,7 +303,8 @@
 		const scoreHeader = document.getElementById('scoreHeader');
 		const scoreBody = document.getElementById('scoreBody');
 		const scoreForm = document.getElementById('scoreForm');
-		const playerSelect = document.getElementById('playerSelect');
+		const playerSelect = document.getElementById('playerSelectHeader');
+		const playerSelectorHeader = document.getElementById('playerSelectorHeader');
 
 		const noTileBtn = document.getElementById('noTileBtn');
         const bonusSelect = document.getElementById('bonusSelect');
@@ -307,6 +332,7 @@
         startNewGameBtn.addEventListener('click', function() {
             // Clear state and reload page
             clearState();
+            playerSelectorHeader.style.display = 'none';
             location.reload();
         });
 
@@ -497,6 +523,7 @@
 			saveState();
 			setupForm.parentElement.style.display = 'none';
 			scoreboardDiv.style.display = '';
+			playerSelectorHeader.style.display = '';
 			renderScoreboard();
 			updatePlayerSelect();
 			playerSelect.focus();
@@ -646,6 +673,7 @@
 			if (loadState() && players.length > 0) {
 				setupForm.parentElement.style.display = 'none';
 				scoreboardDiv.style.display = '';
+				playerSelectorHeader.style.display = '';
 				renderScoreboard();
 				updatePlayerSelect();
                 playerSelect.focus();
