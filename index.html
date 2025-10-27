@@ -120,11 +120,14 @@
 		.radio-label input[type="radio"] {
 			margin: 0;
 		}
-		.radio-label input[type="radio"]:checked + span,
 		.radio-label:has(input[type="radio"]:checked) {
 			background: #1976d2;
 			color: white;
 			border-color: #1565c0;
+		}
+		/* Fallback for browsers without :has() support */
+		.radio-label input[type="radio"]:checked {
+			accent-color: #1976d2;
 		}
 		@media (max-width: 600px) {
 			.container {
@@ -188,34 +191,34 @@
 					<div class="tile-value-group">
 						<label class="group-label">Corner 1:</label>
 						<div class="radio-group">
-							<label class="radio-label"><input type="radio" name="scoreInput1" value="0" checked> 0</label>
-							<label class="radio-label"><input type="radio" name="scoreInput1" value="1"> 1</label>
-							<label class="radio-label"><input type="radio" name="scoreInput1" value="2"> 2</label>
-							<label class="radio-label"><input type="radio" name="scoreInput1" value="3"> 3</label>
-							<label class="radio-label"><input type="radio" name="scoreInput1" value="4"> 4</label>
-							<label class="radio-label"><input type="radio" name="scoreInput1" value="5"> 5</label>
+							<label class="radio-label" for="scoreInput1-0"><input type="radio" id="scoreInput1-0" name="scoreInput1" value="0" checked> 0</label>
+							<label class="radio-label" for="scoreInput1-1"><input type="radio" id="scoreInput1-1" name="scoreInput1" value="1"> 1</label>
+							<label class="radio-label" for="scoreInput1-2"><input type="radio" id="scoreInput1-2" name="scoreInput1" value="2"> 2</label>
+							<label class="radio-label" for="scoreInput1-3"><input type="radio" id="scoreInput1-3" name="scoreInput1" value="3"> 3</label>
+							<label class="radio-label" for="scoreInput1-4"><input type="radio" id="scoreInput1-4" name="scoreInput1" value="4"> 4</label>
+							<label class="radio-label" for="scoreInput1-5"><input type="radio" id="scoreInput1-5" name="scoreInput1" value="5"> 5</label>
 						</div>
 					</div>
 					<div class="tile-value-group">
 						<label class="group-label">Corner 2:</label>
 						<div class="radio-group">
-							<label class="radio-label"><input type="radio" name="scoreInput2" value="0" checked> 0</label>
-							<label class="radio-label"><input type="radio" name="scoreInput2" value="1"> 1</label>
-							<label class="radio-label"><input type="radio" name="scoreInput2" value="2"> 2</label>
-							<label class="radio-label"><input type="radio" name="scoreInput2" value="3"> 3</label>
-							<label class="radio-label"><input type="radio" name="scoreInput2" value="4"> 4</label>
-							<label class="radio-label"><input type="radio" name="scoreInput2" value="5"> 5</label>
+							<label class="radio-label" for="scoreInput2-0"><input type="radio" id="scoreInput2-0" name="scoreInput2" value="0" checked> 0</label>
+							<label class="radio-label" for="scoreInput2-1"><input type="radio" id="scoreInput2-1" name="scoreInput2" value="1"> 1</label>
+							<label class="radio-label" for="scoreInput2-2"><input type="radio" id="scoreInput2-2" name="scoreInput2" value="2"> 2</label>
+							<label class="radio-label" for="scoreInput2-3"><input type="radio" id="scoreInput2-3" name="scoreInput2" value="3"> 3</label>
+							<label class="radio-label" for="scoreInput2-4"><input type="radio" id="scoreInput2-4" name="scoreInput2" value="4"> 4</label>
+							<label class="radio-label" for="scoreInput2-5"><input type="radio" id="scoreInput2-5" name="scoreInput2" value="5"> 5</label>
 						</div>
 					</div>
 					<div class="tile-value-group">
 						<label class="group-label">Corner 3:</label>
 						<div class="radio-group">
-							<label class="radio-label"><input type="radio" name="scoreInput3" value="0" checked> 0</label>
-							<label class="radio-label"><input type="radio" name="scoreInput3" value="1"> 1</label>
-							<label class="radio-label"><input type="radio" name="scoreInput3" value="2"> 2</label>
-							<label class="radio-label"><input type="radio" name="scoreInput3" value="3"> 3</label>
-							<label class="radio-label"><input type="radio" name="scoreInput3" value="4"> 4</label>
-							<label class="radio-label"><input type="radio" name="scoreInput3" value="5"> 5</label>
+							<label class="radio-label" for="scoreInput3-0"><input type="radio" id="scoreInput3-0" name="scoreInput3" value="0" checked> 0</label>
+							<label class="radio-label" for="scoreInput3-1"><input type="radio" id="scoreInput3-1" name="scoreInput3" value="1"> 1</label>
+							<label class="radio-label" for="scoreInput3-2"><input type="radio" id="scoreInput3-2" name="scoreInput3" value="2"> 2</label>
+							<label class="radio-label" for="scoreInput3-3"><input type="radio" id="scoreInput3-3" name="scoreInput3" value="3"> 3</label>
+							<label class="radio-label" for="scoreInput3-4"><input type="radio" id="scoreInput3-4" name="scoreInput3" value="4"> 4</label>
+							<label class="radio-label" for="scoreInput3-5"><input type="radio" id="scoreInput3-5" name="scoreInput3" value="5"> 5</label>
 						</div>
 					</div>
 				</div>
@@ -566,9 +569,9 @@
 			renderScoreboard();
 
 			// Reset radio buttons to 0
-			document.querySelector('input[name="scoreInput1"][value="0"]').checked = true;
-			document.querySelector('input[name="scoreInput2"][value="0"]').checked = true;
-			document.querySelector('input[name="scoreInput3"][value="0"]').checked = true;
+			document.getElementById('scoreInput1-0').checked = true;
+			document.getElementById('scoreInput2-0').checked = true;
+			document.getElementById('scoreInput3-0').checked = true;
 			tilesDrawn.value = '0';
 			bonusSelect.value = '0';
 
