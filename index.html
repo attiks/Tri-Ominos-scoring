@@ -19,19 +19,27 @@
 		}
 		.header {
 			display: flex;
-			justify-content: space-between;
+			justify-content: center;
 			align-items: center;
 			margin-bottom: 0.5em;
 		}
 		h1 {
 			text-align: center;
 			margin: 0;
-			flex: 1;
 		}
-		.player-selector-header {
+		.scoreboard-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 1em;
+		}
+		.scoreboard-header h2 {
+			margin: 0;
+		}
+		.player-selector-scoreboard {
 			flex-shrink: 0;
 		}
-		.player-selector-header select {
+		.player-selector-scoreboard select {
 			border: 1px solid #ccc;
 			border-radius: 5px;
 			padding: 0.7em 1.2em;
@@ -39,7 +47,7 @@
 			cursor: pointer;
 			background: #fff;
 		}
-		.player-selector-header select:focus {
+		.player-selector-scoreboard select:focus {
 			outline: 2px solid #1565c0;
 		}
 		.setup, .scoreboard {
@@ -175,9 +183,6 @@
 	<div class="container">
 		<div class="header">
 			<h1>Tri▲Ominos® Scoring</h1>
-			<div class="player-selector-header" id="playerSelectorHeader" style="display:none;">
-				<select id="playerSelectHeader"></select>
-			</div>
 		</div>
 		<div class="setup" id="setup">
 			<form id="setupForm">
@@ -204,7 +209,12 @@
             </div>
         </div>
 	    <div class="scoreboard" id="scoreboard" style="display:none;">
-			<h2>Scoreboard</h2>
+			<div class="scoreboard-header">
+				<h2>Scoreboard</h2>
+				<div class="player-selector-scoreboard" id="playerSelectorScoreboard" style="display:none;">
+					<select id="playerSelectHeader"></select>
+				</div>
+			</div>
 			<table id="scoreTable">
 				<thead>
 					<tr id="scoreHeader"></tr>
@@ -308,7 +318,7 @@
 		const scoreBody = document.getElementById('scoreBody');
 		const scoreForm = document.getElementById('scoreForm');
 		const playerSelect = document.getElementById('playerSelectHeader');
-		const playerSelectorHeader = document.getElementById('playerSelectorHeader');
+		const playerSelectorScoreboard = document.getElementById('playerSelectorScoreboard');
 
 		const noTileBtn = document.getElementById('noTileBtn');
         const bonusSelect = document.getElementById('bonusSelect');
@@ -336,7 +346,7 @@
         startNewGameBtn.addEventListener('click', function() {
             // Clear state and reload page
             clearState();
-            playerSelectorHeader.style.display = 'none';
+            playerSelectorScoreboard.style.display = 'none';
             location.reload();
         });
 
@@ -527,7 +537,7 @@
 			saveState();
 			setupForm.parentElement.style.display = 'none';
 			scoreboardDiv.style.display = '';
-			playerSelectorHeader.style.display = '';
+			playerSelectorScoreboard.style.display = '';
 			renderScoreboard();
 			updatePlayerSelect();
 			playerSelect.focus();
@@ -677,7 +687,7 @@
 			if (loadState() && players.length > 0) {
 				setupForm.parentElement.style.display = 'none';
 				scoreboardDiv.style.display = '';
-				playerSelectorHeader.style.display = '';
+				playerSelectorScoreboard.style.display = '';
 				renderScoreboard();
 				updatePlayerSelect();
                 playerSelect.focus();
