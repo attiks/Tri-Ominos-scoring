@@ -103,6 +103,10 @@
 				<input type="number" id="numPlayers" name="numPlayers" min="2" max="6" value="2" required>
 				<div id="playerNames"></div>
 				<button type="submit">Start Game</button>
+                <p>Place the Tri-Ominos face down and mix them.<br>
+                    Each player takes the required number of Tri-Ominos as follows:<br>
+                    - 2 players: 9 each<br>
+                    - 3 to 4 players: 7 each</p>
 			</form>
 		</div>
         <div id="messageModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); z-index:1000; align-items:center; justify-content:center;">
@@ -199,7 +203,7 @@
         const closeLogBtn = document.getElementById('closeLogBtn');
 
         const messageModal = document.getElementById('messageModal');
-        const messageModalContent = document.getElementById('messageModalContent');
+        const messageContent = document.getElementById('messageContent');
         const closeMessageBtn = document.getElementById('closeMessageBtn');
         const startNewGameBtn = document.getElementById('startNewGameBtn');
         startNewGameBtn.addEventListener('click', function() {
@@ -209,7 +213,7 @@
         });
 
         function showMessage(msg, allowNewGame=false) {
-            messageModalContent.innerHTML = msg;
+            messageContent.innerHTML = msg;
             messageModal.style.display = 'flex';
             if (allowNewGame) {
                 startNewGameBtn.style.display = 'inline-block';
@@ -292,18 +296,26 @@
 			// Find lowest hand value
 			const minVal = Math.min(...handVals);
 			const minIdxs = handVals.reduce((arr, val, idx) => val === minVal ? arr.concat(idx) : arr, []);
+
 			// If only one player has lowest, apply bonus
 			if (minIdxs.length === 1) {
+                // Winner gets 25 extra points if no tiles left
+                if (minVal === 0) {
+                    scores[minIdxs[0]] += 25;
+                    scoreLog.push(`${players[minIdxs[0]]} ended round with no tiles left: +25 bonus`);
+                }
+
 				// That player gets sum of differences from all others
 				let bonus = 0;
 				handVals.forEach((val, idx) => {
 					if (idx !== minIdxs[0]) bonus += (val - minVal);
 				});
 				scores[minIdxs[0]] += bonus;
+                scoreLog.push(`${players[minIdxs[0]]} gets a bonus of ${bonus} points for lowest hand value.`);
 			}
+
 			// Hide modal, reset for next round
 			endRoundModal.style.display = 'none';
-
 			renderScoreboard();
 
             if (lastRound) {
@@ -381,7 +393,7 @@
 			scoreBody.appendChild(tr);
 
             // Check for 400 point trigger
-            if (!lastRound && scores.some(score => score >= 400)) {
+            if (!lastRound && scores.some(score => score >= 40)) {
                 lastRound = true;
                 showMessage('A player has reached 400 points! This is the last round. Winner will be determined at the end of this round.');
             }
