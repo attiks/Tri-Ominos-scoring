@@ -83,6 +83,49 @@
 			width: 33%;
 			text-align: center;
 		}
+		.tile-values-container {
+			margin-top: 0.5em;
+		}
+		.tile-value-group {
+			margin-bottom: 1em;
+		}
+		.group-label {
+			font-weight: 600;
+			margin-bottom: 0.3em;
+			display: block;
+		}
+		.radio-group {
+			display: flex;
+			gap: 0.5em;
+			flex-wrap: wrap;
+		}
+		.radio-label {
+			display: flex;
+			align-items: center;
+			gap: 0.2em;
+			cursor: pointer;
+			padding: 0.3em 0.5em;
+			border-radius: 5px;
+			background: #f8f9fa;
+			border: 1px solid #ddd;
+			transition: all 0.2s ease;
+			font-size: 0.9em;
+			margin: 0;
+			min-width: 40px;
+			justify-content: center;
+		}
+		.radio-label:hover {
+			background: #e3eafc;
+		}
+		.radio-label input[type="radio"] {
+			margin: 0;
+		}
+		.radio-label input[type="radio"]:checked + span,
+		.radio-label:has(input[type="radio"]:checked) {
+			background: #1976d2;
+			color: white;
+			border-color: #1565c0;
+		}
 		@media (max-width: 600px) {
 			.container {
 				max-width: 100%;
@@ -140,32 +183,41 @@
 					<option value="2">2</option>
 					<option value="3">3</option>
 				</select>
-				<label for="scoreInput1">Tile values to add:</label>
-				<div style="display:flex; gap:8px;">
-					<select id="scoreInput1" class="score-input" required>
-						<option value="0">0</option>
-						<option value="1">1</option>
-						<option value="2">2</option>
-						<option value="3">3</option>
-						<option value="4">4</option>
-						<option value="5">5</option>
-					</select>
-					<select id="scoreInput2" class="score-input" required>
-						<option value="0">0</option>
-						<option value="1">1</option>
-						<option value="2">2</option>
-						<option value="3">3</option>
-						<option value="4">4</option>
-						<option value="5">5</option>
-					</select>
-					<select id="scoreInput3" class="score-input" required>
-						<option value="0">0</option>
-						<option value="1">1</option>
-						<option value="2">2</option>
-						<option value="3">3</option>
-						<option value="4">4</option>
-						<option value="5">5</option>
-					</select>
+				<label>Tile values to add:</label>
+				<div class="tile-values-container">
+					<div class="tile-value-group">
+						<label class="group-label">Corner 1:</label>
+						<div class="radio-group">
+							<label class="radio-label"><input type="radio" name="scoreInput1" value="0" checked> 0</label>
+							<label class="radio-label"><input type="radio" name="scoreInput1" value="1"> 1</label>
+							<label class="radio-label"><input type="radio" name="scoreInput1" value="2"> 2</label>
+							<label class="radio-label"><input type="radio" name="scoreInput1" value="3"> 3</label>
+							<label class="radio-label"><input type="radio" name="scoreInput1" value="4"> 4</label>
+							<label class="radio-label"><input type="radio" name="scoreInput1" value="5"> 5</label>
+						</div>
+					</div>
+					<div class="tile-value-group">
+						<label class="group-label">Corner 2:</label>
+						<div class="radio-group">
+							<label class="radio-label"><input type="radio" name="scoreInput2" value="0" checked> 0</label>
+							<label class="radio-label"><input type="radio" name="scoreInput2" value="1"> 1</label>
+							<label class="radio-label"><input type="radio" name="scoreInput2" value="2"> 2</label>
+							<label class="radio-label"><input type="radio" name="scoreInput2" value="3"> 3</label>
+							<label class="radio-label"><input type="radio" name="scoreInput2" value="4"> 4</label>
+							<label class="radio-label"><input type="radio" name="scoreInput2" value="5"> 5</label>
+						</div>
+					</div>
+					<div class="tile-value-group">
+						<label class="group-label">Corner 3:</label>
+						<div class="radio-group">
+							<label class="radio-label"><input type="radio" name="scoreInput3" value="0" checked> 0</label>
+							<label class="radio-label"><input type="radio" name="scoreInput3" value="1"> 1</label>
+							<label class="radio-label"><input type="radio" name="scoreInput3" value="2"> 2</label>
+							<label class="radio-label"><input type="radio" name="scoreInput3" value="3"> 3</label>
+							<label class="radio-label"><input type="radio" name="scoreInput3" value="4"> 4</label>
+							<label class="radio-label"><input type="radio" name="scoreInput3" value="5"> 5</label>
+						</div>
+					</div>
 				</div>
 				<select id="bonusSelect">
 					<option value="0">Bonus</option>
@@ -217,9 +269,6 @@
 		const scoreBody = document.getElementById('scoreBody');
 		const scoreForm = document.getElementById('scoreForm');
 		const playerSelect = document.getElementById('playerSelect');
-		const scoreInput1 = document.getElementById('scoreInput1');
-		const scoreInput2 = document.getElementById('scoreInput2');
-		const scoreInput3 = document.getElementById('scoreInput3');
 		const tilesDrawn = document.getElementById('tilesDrawn');
 		const noTileBtn = document.getElementById('noTileBtn');
         const bonusSelect = document.getElementById('bonusSelect');
@@ -480,9 +529,9 @@
 			saveState();
 			e.preventDefault();
 			const idx = parseInt(playerSelect.value);
-			const v1 = parseInt(scoreInput1.value) || 0;
-			const v2 = parseInt(scoreInput2.value) || 0;
-			const v3 = parseInt(scoreInput3.value) || 0;
+			const v1 = parseInt(document.querySelector('input[name="scoreInput1"]:checked').value) || 0;
+			const v2 = parseInt(document.querySelector('input[name="scoreInput2"]:checked').value) || 0;
+			const v3 = parseInt(document.querySelector('input[name="scoreInput3"]:checked').value) || 0;
 			const drawn = parseInt(tilesDrawn.value) || 0;
 			const bonus = parseInt(bonusSelect.value) || 0;
 			let delta = v1 + v2 + v3;
@@ -516,9 +565,10 @@
             scoreLog.push(logEntry);
 			renderScoreboard();
 
-			scoreInput1.value = '';
-			scoreInput2.value = '';
-			scoreInput3.value = '';
+			// Reset radio buttons to 0
+			document.querySelector('input[name="scoreInput1"][value="0"]').checked = true;
+			document.querySelector('input[name="scoreInput2"][value="0"]').checked = true;
+			document.querySelector('input[name="scoreInput3"][value="0"]').checked = true;
 			tilesDrawn.value = '0';
 			bonusSelect.value = '0';
 
