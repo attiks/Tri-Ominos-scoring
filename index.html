@@ -422,7 +422,7 @@
 			scoreBody.appendChild(tr);
 
             // Check for 400 point trigger
-            if (!lastRound && scores.some(score => score >= 40)) {
+            if (!lastRound && scores.some(score => score >= 400)) {
                 lastRound = true;
                 showMessage('A player has reached 400 points! This is the last round. Winner will be determined at the end of this round.');
             }
