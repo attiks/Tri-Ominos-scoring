@@ -80,7 +80,7 @@
 			background: #f2f6fc;
 		}
 		.score-input {
-			width: 60px;
+			width: 33%;
 			text-align: center;
 		}
 		@media (max-width: 600px) {
@@ -131,15 +131,35 @@
 				<label for="tilesDrawn">Tiles drawn (0-3):</label>
 				<input type="number" id="tilesDrawn" class="tiles-drawn" value="0" min="0" max="3" required>
 
-				<label>Tile values to add:</label>
+				<label for="scoreInput1">Tile values to add:</label>
 				<div style="display:flex; gap:8px;">
-					<input type="number" id="scoreInput1" class="score-input" required placeholder="Value 1" min="0" max="5">
-					<input type="number" id="scoreInput2" class="score-input" required placeholder="Value 2" min="0" max="5">
-					<input type="number" id="scoreInput3" class="score-input" required placeholder="Value 3" min="0" max="5">
+					<select id="scoreInput1" class="score-input" required>
+						<option value="0">0</option>
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+					</select>
+					<select id="scoreInput2" class="score-input" required>
+						<option value="0">0</option>
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+					</select>
+					<select id="scoreInput3" class="score-input" required>
+						<option value="0">0</option>
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+					</select>
 				</div>
-				<label for="bonusSelect">Bonus placement:</label>
 				<select id="bonusSelect">
-					<option value="0">None</option>
+					<option value="0">Bonus</option>
 					<option value="40">Bridge (+40)</option>
 					<option value="50">Hexagon (+50)</option>
 					<option value="100">Double Hexagon (+100)</option>
@@ -171,6 +191,10 @@
 					</form>
 				</div>
 			</div>
+
+            <div>
+                <button id="resetGameBtn" style="background:#d32f2f; margin-top:1em;">Reset Game</button>
+            </div>
 		</div>
 	</div>
 	<script>
@@ -196,6 +220,11 @@
         const endRoundForm = document.getElementById('endRoundForm');
         const endRoundInputs = document.getElementById('endRoundInputs');
         const cancelEndRound = document.getElementById('cancelEndRound');
+        const resetGameBtn = document.getElementById('resetGameBtn');
+        resetGameBtn.addEventListener('click', function() {
+            // Show a modal for confirmation.
+            showMessage('Are you sure you want to reset the game? This will clear all scores and progress.', true);
+        });
 
         const viewLogBtn = document.getElementById('viewLogBtn');
         const logModal = document.getElementById('logModal');
@@ -253,7 +282,7 @@
 				scores = state.scores || [];
 				rounds = state.rounds || [];
 				scoreLog = state.scoreLog || [];
-				isFirstTile = state.isFirstTile || false;
+				isFirstTile = state.isFirstTile || true;
 				lastRound = state.lastRound || false;
 				return true;
 			} catch {
